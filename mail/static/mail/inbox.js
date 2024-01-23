@@ -68,23 +68,18 @@ function load_mailbox(mailbox) {
         read_cell.innerHTML = '<i class="bi bi-circle-fill" style = "color: #D70040"></i>'
       }
       row.appendChild(read_cell);
+
+      function addTextCol(className, text) {
+        const sender_cell = document.createElement("td");  
+        sender_cell.className = className;
+        const sender_cell_text = document.createTextNode(text);
+        sender_cell.appendChild(sender_cell_text);
+        row.appendChild(sender_cell);
+      }
       
-      const sender_cell = document.createElement("td");  
-      sender_cell.className = "font-weight-bold";
-      const sender_cell_text = document.createTextNode(`${emails[i].sender}`);
-      sender_cell.appendChild(sender_cell_text);
-      row.appendChild(sender_cell);
-
-      const subject_cell = document.createElement("td"); 
-      const subject_cell_text = document.createTextNode(`${emails[i].subject}`);
-      subject_cell.appendChild(subject_cell_text);
-      row.appendChild(subject_cell);
-
-      const timestamp_cell = document.createElement("td"); 
-      timestamp_cell.className = "text-muted text-right";
-      const timestamp_cell_text = document.createTextNode(`${emails[i].timestamp}`);
-      timestamp_cell.appendChild(timestamp_cell_text);
-      row.appendChild(timestamp_cell);
+      addTextCol("font-weight-bold", `${emails[i].sender}`);
+      addTextCol("", `${emails[i].subject}`);
+      addTextCol("text-muted text-right", `${emails[i].timestamp}`);
 
       row.setAttribute("data-email_id", emails[i].id)
 
