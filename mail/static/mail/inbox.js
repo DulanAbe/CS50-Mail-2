@@ -244,7 +244,7 @@ function reply_email(email_id) {
 
 }
 
-async function archive_email(email_id, archived) {
+ async function archive_email(email_id, archived) {
 
   console.log("Function running");
   console.log(archived)
