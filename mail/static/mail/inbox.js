@@ -169,21 +169,33 @@ function view_email(id) {
     reply_button.className = "btn btn-sm btn-primary m-1";
     reply_button.innerHTML = 'Reply';
     reply_button.setAttribute("id", "reply_button");
+    
+    reply_button.onclick = function () {
+      reply_email(email.id);
+    }
+
     document.querySelector('#email-view').appendChild(reply_button);
 
-    // Check if email is sent? 
+
+
 
     // Add a button to archive
     archive_button = document.createElement('button');
     archive_button.className = "btn btn-sm btn-primary m-1";
     archive_button.setAttribute("id", "archive_button");
-    archive_button.innerHTML = 'Archive';
-    archive_button.onclick = function () {
-      archive_email(email.id)
+    
+    // Check if email is archived or not: 
+    if (email.archived) {
+      archive_button.innerHTML = "Unarchive"; 
+    } else {
+      archive_button.innerHTML = "Archive"; 
     }
-      // Archive the email 
-      
-      // Put a put request to the server and mark it as archived
+
+
+
+    archive_button.onclick = function () {
+      archive_email(email.id, email.archived);
+    }
 
     
     document.querySelector('#email-view').appendChild(archive_button);
@@ -212,13 +224,54 @@ function view_email(id) {
   })
 }
 
-function archive_email (email_id) {
-  // Make a put request and to archive the email 
-  fetch(`/emails/${email_id}`, {
-    method: 'PUT',
-    body: JSON.stringify ({
-      archived: true
-    })
+function reply_email(email_id) {
+  // Load the compose email view
+
+  // Make a fetch request and get access to all the information 
+  fetch(`/emails/${email_id}`)
+  .then(response => response.json())
+  .then(email => {
+    console.log(email)
+
+    compose_email();
+
+
+    // Prefill the form
+    document.querySelector('#compose-recipients').value = email.sender;
+    document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+    document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote:\n${email.body}`;
   })
-  console.log("Archived")
+
+}
+
+async function archive_email(email_id, archived) {
+
+  console.log("Function running");
+  console.log(archived)
+  // Make a put request and to archive the email 
+  if (archived) {
+    console.log("This email is archived");
+    // Unarchive the email
+    await fetch(`/emails/${email_id}`, {
+      method: 'PUT', 
+      body: JSON.stringify({
+        archived: false
+      })
+    })
+    
+    // Put a modal that the email has been archived
+  } else {
+    console.log("This email is not archived");
+    // Archive the email 
+    await fetch(`/emails/${email_id}`, {
+      method: 'PUT', 
+      body: JSON.stringify({
+        archived: true
+      })
+    })
+  }
+
+  // Load email inbox: 
+  load_mailbox('inbox');
+
 }
